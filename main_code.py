@@ -16,13 +16,29 @@ from omegaconf import DictConfig, OmegaConf
 
 
 def get_load_data(file_path:str):
+    """
+    Loads a dataset from a CSV file and returns a Pandas DataFrame.
+    Args:
+        file_path (str): The path to the CSV file.
+    Returns:
+         df (pd.DataFrame): A Pandas DataFrame containing the data from the CSV file.
+    """
     df = pd.read_csv(file_path)
     mapped_class = {"'0'": 0, "'1'": 1}
     df["Class"] = df["Class"].map(lambda x: mapped_class[x])
     return df
 
 
-def get_processed_data(df, random_state:int):
+def get_processed_data(df:pd.DataFrame, random_state:int):
+    """Gets processed data from a Pandas DataFrame.
+
+    Args:
+        df (pd.DataFrame): The Pandas DataFrame containing the data.
+        random_state (int): The random state for the SMOTE algorithm.
+
+    Returns:
+        smote_df (pd.DataFrame): A Pandas DataFrame containing the processed data.
+    """
     sm = SMOTE(random_state=random_state)
     X = df.drop(["Class", "Time"], axis=1).values
     y = df["Class"].values
@@ -39,7 +55,7 @@ def get_train_test_split(
     def create_training_sets(data):
         """
         Convert data frame to train, validation and test
-        params:
+        Args:
             data: The dataframe with the dataset to be split
         Returns:
             train_features: Training feature dataset
@@ -94,6 +110,19 @@ def get_train_test_split(
 def get_train_test_split_samples(
     test_features, test_labels, train_features, train_labels, val_features, val_labels
 ):
+    """ Splits a dataset into three parts i.e train, test, and validation. The train set is used to train a machine learning model, the test set is used to evaluate the performance of the trained model, and the validation set is used to tune the hyperparameters of the machine learning model. 
+
+    Args:
+        test_features (np.ndarray): The test features.
+        test_labels (np.ndarray): The test labels.
+        train_features (np.ndarray): The train features.
+        train_labels (np.ndarray): The train labels.
+        val_features (np.ndarray): The validation features.
+        val_labels (np.ndarray): The validation labels.
+
+    Returns:
+        split_samples (tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]): A tuple containing the train, test, and validation samples.
+    """
     split_samples = (
         train_features,
         test_features,
