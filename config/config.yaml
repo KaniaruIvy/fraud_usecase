@@ -1,0 +1,36 @@
+file_path: "fraud.csv"
+test_size_1: 0.2
+test_size_2: 0.5
+random_state: 35
+
+db:
+  driver: postgresql
+  pass: drowssap
+  timeout: 20
+  user: postgres_user
+
+model:
+  base_score: 0.5
+  booster: "gbtree"
+  colsample_bylevel: 1
+  colsample_bynode: 1
+  colsample_bytree: 0.8
+  gamma: 1
+  importance_type: "gain"
+  interaction_constraints: ""
+  learning_rate: 0.2
+  max_delta_step: 0
+  max_depth: 6
+  min_child_weight: 5
+  monotone_constraints: "()"
+  n_estimators: 100
+  n_jobs: 48
+  num_parallel_tree: 1
+  random_state: 0
+  reg_alpha: 0
+  reg_lambda: 1
+  scale_pos_weight: 1
+  silent: True
+  subsample: 0.8
+  tree_method: "exact"
+  validate_parameters: 1
