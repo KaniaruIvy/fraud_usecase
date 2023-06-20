@@ -3,11 +3,10 @@ test_size_1: 0.2
 test_size_2: 0.5
 random_state: 35
 
-db:
-  driver: postgresql
-  pass: drowssap
-  timeout: 20
-  user: postgres_user
+columns:
+  y_variable: Class
+  drop_variable: Time
+
 
 model:
   base_score: 0.5

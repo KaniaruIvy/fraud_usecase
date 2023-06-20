@@ -11,11 +11,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
 from sklearn.metrics import f1_score
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import OmegaConf
 
+cfg = OmegaConf.load("config/config.yaml")
 
-
-def get_load_data(file_path:str):
+def get_load_data(file_path: str):
     """
     Loads a dataset from a CSV file and returns a Pandas DataFrame.
     Args:
@@ -23,13 +23,14 @@ def get_load_data(file_path:str):
     Returns:
          df (pd.DataFrame): A Pandas DataFrame containing the data from the CSV file.
     """
+    y_variable = cfg.columns["y_variable"]
     df = pd.read_csv(file_path)
     mapped_class = {"'0'": 0, "'1'": 1}
-    df["Class"] = df["Class"].map(lambda x: mapped_class[x])
+    df[y_variable] = df[y_variable].map(lambda x: mapped_class[x])
     return df
 
 
-def get_processed_data(df:pd.DataFrame, random_state:int):
+def get_processed_data(df: pd.DataFrame, random_state: int):
     """Gets processed data from a Pandas DataFrame.
 
     Args:
@@ -39,19 +40,20 @@ def get_processed_data(df:pd.DataFrame, random_state:int):
     Returns:
         smote_df (pd.DataFrame): A Pandas DataFrame containing the processed data.
     """
+    y_variable, drop_variable = cfg.columns["y_variable"], cfg.columns["drop_variable"]
     sm = SMOTE(random_state=random_state)
-    X = df.drop(["Class", "Time"], axis=1).values
-    y = df["Class"].values
+    X = df.drop([y_variable, drop_variable], axis=1).values
+    y = df[y_variable].values
     X_res, y_res = sm.fit_resample(X, y)
-    smote_df = pd.DataFrame(X_res, columns=df.drop(["Class", "Time"], axis=1).columns)
-    smote_df["Class"] = y_res
-    smote_df["Time"] = df["Time"]
+    smote_df = pd.DataFrame(
+        X_res, columns=df.drop([y_variable, drop_variable], axis=1).columns
+    )
+    smote_df[y_variable] = y_res
+    smote_df[drop_variable] = df[drop_variable]
     return smote_df
 
 
-def get_train_test_split(
-    smote_df, test_size_1, test_size_2
-):
+def get_train_test_split(smote_df, test_size_1, test_size_2):
     def create_training_sets(data):
         """
         Convert data frame to train, validation and test
@@ -66,9 +68,13 @@ def get_train_test_split(
             val_labels: Labels for the validation dataset
         """
         # Extract the target variable from the dataframe and convert the type to float32
-        ys = np.array(data["Class"]).astype("float32")
+        y_variable, drop_variable = (
+            cfg.columns["y_variable"],
+            cfg.columns["drop_variable"],
+        )
+        ys = np.array(data[y_variable]).astype("float32")
         # Drop all the unwanted columns including the target column
-        drop_list = ["Class", "Time"]
+        drop_list = [y_variable, drop_variable]
         # Drop the columns from the drop_list and convert the data into a NumPy array of type float32
         xs = np.array(data.drop(drop_list, axis=1)).astype("float32")
         np.random.seed(0)
@@ -110,7 +116,7 @@ def get_train_test_split(
 def get_train_test_split_samples(
     test_features, test_labels, train_features, train_labels, val_features, val_labels
 ):
-    """ Splits a dataset into three parts i.e train, test, and validation for training, evaluating and tuning the hyperaremters of the model
+    """Splits a dataset into three parts i.e train, test, and validation for training, evaluating and tuning the hyperaremters of the model
 
     Args:
         test_features (np.ndarray): The test features.
@@ -146,9 +152,8 @@ def get_fraud_model(train_features, train_labels, val_features, val_labels):
     Returns:
         model: The model used for training.
     """
-    cfg = OmegaConf.load("config/config.yaml")
     model = XGBClassifier(
-        base_score= cfg.model["base_score"],
+        base_score=cfg.model["base_score"],
         booster=cfg.model["booster"],
         colsample_bylevel=cfg.model["colsample_bylevel"],
         colsample_bynode=cfg.model["colsample_bynode"],
@@ -227,20 +232,20 @@ def get_F1_Score(model, test_features, test_labels):
 
 
 def run_session_including_load_data(
-    file_path="fraud.csv",
-    test_size_1=0.2,
-    test_size_2=0.5,
-    random_state=35,
+    file_path=cfg["file_path"],
+    test_size_1=cfg["test_size_1"],
+    test_size_2=cfg["test_size_2"],
+    random_state=cfg["random_state"],
 ):
-    """Runs a session of fraud_detection 
+    """Runs a session of fraud_detection
 
     Args:
         file_path (str): Path to the CSV that contains the fraud data.
-        test_size_1 (float): A fraction that splits the dataset into train and test 
+        test_size_1 (float): A fraction that splits the dataset into train and test
         test_size_2 (float):A fraction that splits the test dataset into test and validation
         random_state (int): A random number generator seed
 
-    
+
     Returns:
         A dictionary containing the following artifacts:
 
@@ -273,9 +278,7 @@ def run_session_including_load_data(
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(
-        smote_df, test_size_1, test_size_2
-    )
+    ) = get_train_test_split(smote_df, test_size_1, test_size_2)
     split_samples = get_train_test_split_samples(
         test_features,
         test_labels,
@@ -295,20 +298,20 @@ def run_session_including_load_data(
 
 
 def run_all_sessions(
-    file_path="fraud.csv",
-    test_size_1=0.2,
-    test_size_2=0.5,
-    random_state=35,
+    file_path=cfg["file_path"],
+    test_size_1=cfg["test_size_1"],
+    test_size_2=cfg["test_size_2"],
+    random_state=cfg["random_state"],
 ):
     """Runs all session of fraud_detection except loading data
 
     Args:
         file_path (str): Path to the CSV that contains the fraud data.
-        test_size_1 (float): A fraction that splits the dataset into train and test 
+        test_size_1 (float): A fraction that splits the dataset into train and test
         test_size_2 (float):A fraction that splits the test dataset into test and validation
         random_state (int): A random number generator seed
 
-    
+
     Returns:
         A dictionary containing the following artifacts:
 
@@ -332,8 +335,8 @@ def run_all_sessions(
     )
     return artifacts
 
-@hydra.main(version_base=None, config_path="config", config_name="config")
-def main(cfg : DictConfig) -> None:
+
+def main() -> None:
     """Run all sessions."""
 
     # Edit this section to customize the behavior of artifacts
