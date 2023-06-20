@@ -2,19 +2,14 @@ import argparse
 import hydra
 import numpy as np
 import pandas as pd
-import main_test
 from imblearn.over_sampling import SMOTE
-from sklearn.impute import SimpleImputer
-from sklearn.manifold import TSNE
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
 from sklearn.metrics import f1_score
-from omegaconf import OmegaConf
+from omegaconf import DictConfig, OmegaConf
 
 cfg = OmegaConf.load("config/config.yaml")
-
 
 def get_load_data(file_path: str):
     """
