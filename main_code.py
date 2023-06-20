@@ -15,6 +15,7 @@ from omegaconf import OmegaConf
 
 cfg = OmegaConf.load("config/config.yaml")
 
+
 def get_load_data(file_path: str):
     """
     Loads a dataset from a CSV file and returns a Pandas DataFrame.

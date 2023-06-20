@@ -74,9 +74,7 @@ def test_get_train_features_and_labels(file_path):
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(
-        smote_df, 0.2, 0.5
-    )
+    ) = get_train_test_split(smote_df, 0.2, 0.5)
     assert len(train_features) > 0
     assert isinstance(train_labels, np.ndarray)
     assert len(train_labels) == len(train_features)
@@ -105,9 +103,7 @@ def test_get_fraud_model(file_path):
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(
-        smote_df, 0.2, 0.5
-    )
+    ) = get_train_test_split(smote_df, 0.2, 0.5)
     model = get_fraud_model(train_features, train_labels, val_features, val_labels)
     assert model is not None
 
@@ -123,9 +119,7 @@ def test_get_fraud_model_evaluation(file_path):
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(
-        smote_df, 0.2, 0.5
-    )
+    ) = get_train_test_split(smote_df, 0.2, 0.5)
     model = get_fraud_model(train_features, train_labels, val_features, val_labels)
     model_eval = get_fraud_model_evaluation(model, test_features, test_labels)
     assert isinstance(model_eval, str)
@@ -143,9 +137,7 @@ def test_get_F1_Score(file_path):
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(
-        smote_df, 0.2, 0.5
-    )
+    ) = get_train_test_split(smote_df, 0.2, 0.5)
     model = get_fraud_model(train_features, train_labels, val_features, val_labels)
     score = get_F1_Score(model, test_features, test_labels)
     assert isinstance(score, float)

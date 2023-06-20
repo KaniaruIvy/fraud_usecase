@@ -2,7 +2,8 @@ import argparse
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
-#@hydra.main(version_base=None, config_path="config", config_name="config")
+
+# @hydra.main(version_base=None, config_path="config", config_name="config")
 def my_app() -> None:
     cfg = OmegaConf.load("config/config.yaml")
 
@@ -12,6 +13,7 @@ def my_app() -> None:
 
     print(driver_name, file_path, type(model_base_score))
     print(OmegaConf.to_yaml(cfg))
+
 
 if __name__ == "__main__":
     my_app()
@@ -32,8 +34,8 @@ if __name__ == "__main__":
 # def run_all_sessions (cfg : DictConfig) -> None:
 #     """Run all sessions."""
 #     file_path=cfg["file_path"]
-#     test_size_1=cfg["test_size_1"] 
-#     test_size_2=cfg["test_size_2"] 
+#     test_size_1=cfg["test_size_1"]
+#     test_size_2=cfg["test_size_2"]
 #     random_state=cfg["random_state"]
 #     artifacts = dict()
 #     artifacts.update(
