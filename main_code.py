@@ -110,7 +110,7 @@ def get_train_test_split(
 def get_train_test_split_samples(
     test_features, test_labels, train_features, train_labels, val_features, val_labels
 ):
-    """ Splits a dataset into three parts i.e train, test, and validation. The train set is used to train a machine learning model, the test set is used to evaluate the performance of the trained model, and the validation set is used to tune the hyperparameters of the machine learning model. 
+    """ Splits a dataset into three parts i.e train, test, and validation for training, evaluating and tuning the hyperaremters of the model
 
     Args:
         test_features (np.ndarray): The test features.
@@ -135,6 +135,17 @@ def get_train_test_split_samples(
 
 
 def get_fraud_model(train_features, train_labels, val_features, val_labels):
+    """Defines the model used for training
+
+    Args:
+        train_features (np.ndarray): The train features.
+        train_labels (np.ndarray): The train labels.
+        val_features (np.ndarray): The validation features.
+        val_labels (np.ndarray): The validation labels.
+
+    Returns:
+        model: The model used for training.
+    """
     cfg = OmegaConf.load("config/config.yaml")
     model = XGBClassifier(
         base_score= cfg.model["base_score"],
@@ -172,6 +183,16 @@ def get_fraud_model(train_features, train_labels, val_features, val_labels):
 
 
 def get_fraud_model_evaluation(model, test_features, test_labels):
+    """Gets the evaluation metrics of the model after training.
+
+    Args:
+        model (_type_): _description_
+        test_features (np.ndarray): The test features
+        test_labels (np.ndarray): _The test labels
+
+    Returns:
+        model_eval(str): Returns a summary of evaluation metrics inclusing accuracy, precision, recall and F1-Score
+    """
     predictions = model.predict_proba(test_features)[:, 1]
     predictions_1 = []
     for i in predictions:
@@ -184,6 +205,16 @@ def get_fraud_model_evaluation(model, test_features, test_labels):
 
 
 def get_F1_Score(model, test_features, test_labels):
+    """Gets the F1-Score of the model after evaluating it against the test features.
+
+    Args:
+        model (_type_): _description_
+        test_features (np.ndarray): The test features
+        test_labels (np.ndarray): The test labels
+
+    Returns:
+        score(float): The F1 score for the fraud model.
+    """
     predictions = model.predict_proba(test_features)[:, 1]
     predictions_1 = []
     for i in predictions:
@@ -201,6 +232,30 @@ def run_session_including_load_data(
     test_size_2=0.5,
     random_state=35,
 ):
+    """Runs a session of fraud_detection 
+
+    Args:
+        file_path (str): Path to the CSV that contains the fraud data.
+        test_size_1 (float): A fraction that splits the dataset into train and test 
+        test_size_2 (float):A fraction that splits the test dataset into test and validation
+        random_state (int): A random number generator seed
+
+    
+    Returns:
+        A dictionary containing the following artifacts:
+
+        * load_data: The loaded data.
+        * processed_data: The processed data.
+        * train_features: The training features.
+        * train_labels: The training labels.
+        * val_features: The validation features.
+        * val_labels: The validation labels.
+        * test_features: The test features.
+        * test_labels: The test labels.
+        * fraud_model: The trained fraud model.
+        * fraud_model_evaluation: The evaluation results for the fraud model.
+        * F1_Score: The F1 score for the fraud model.
+    """
     # Given multiple artifacts, we need to save each right after
     # its calculation to protect from any irrelevant downstream
     # mutations (e.g., inside other artifact calculations)
@@ -245,6 +300,30 @@ def run_all_sessions(
     test_size_2=0.5,
     random_state=35,
 ):
+    """Runs all session of fraud_detection except loading data
+
+    Args:
+        file_path (str): Path to the CSV that contains the fraud data.
+        test_size_1 (float): A fraction that splits the dataset into train and test 
+        test_size_2 (float):A fraction that splits the test dataset into test and validation
+        random_state (int): A random number generator seed
+
+    
+    Returns:
+        A dictionary containing the following artifacts:
+
+        * load_data: The loaded data.
+        * processed_data: The processed data.
+        * train_features: The training features.
+        * train_labels: The training labels.
+        * val_features: The validation features.
+        * val_labels: The validation labels.
+        * test_features: The test features.
+        * test_labels: The test labels.
+        * fraud_model: The trained fraud model.
+        * fraud_model_evaluation: The evaluation results for the fraud model.
+        * F1_Score: The F1 score for the fraud model.
+    """
     artifacts = dict()
     artifacts.update(
         run_session_including_load_data(
