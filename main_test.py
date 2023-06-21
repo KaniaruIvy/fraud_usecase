@@ -1,22 +1,28 @@
 import pytest
+import os
 import pandas as pd
 import numpy as np
 from main_code import (
     get_load_data,
     get_processed_data,
     get_train_test_split,
-    get_train_test_split_samples,
     get_fraud_model,
     get_fraud_model_evaluation,
     get_F1_Score,
-    run_session_including_load_data,
-    run_all_sessions,
 )
+from omegaconf import OmegaConf
+from hydra import compose, initialize_config_dir
 
+@pytest.fixture(scope="module")
+def cfg():
+    config_dir = os.path.abspath("config")
+    with initialize_config_dir(config_dir):
+        config = compose(config_name="config")
+    return config
 
-@pytest.mark.parametrize("file_path", ["fraud.csv"])
-def test_get_load_data(file_path):
-    df = get_load_data(file_path)
+def test_get_load_data(cfg):
+    file_path=cfg["file_path"]
+    df = get_load_data(cfg,file_path)
     assert isinstance(df, pd.DataFrame)
     assert len(df) > 0
     assert df.columns.tolist() == [
@@ -55,18 +61,17 @@ def test_get_load_data(file_path):
     return df
 
 
-@pytest.mark.parametrize("file_path", ["fraud.csv"])
-def test_get_processed_data(file_path):
-    df = get_load_data(file_path)
-    smote_df = get_processed_data(df, 35)
+def test_get_processed_data(cfg):
+    file_path=cfg["file_path"]
+    df = get_load_data(cfg,file_path)
+    smote_df = get_processed_data(cfg, df, cfg["random_state"])
     assert isinstance(smote_df, pd.DataFrame)
     assert len(smote_df) > 0
 
-
-@pytest.mark.parametrize("file_path", ["fraud.csv"])
-def test_get_train_features_and_labels(file_path):
-    df = get_load_data(file_path)
-    smote_df = get_processed_data(df, 35)
+def test_get_train_features_and_labels(cfg):
+    file_path=cfg["file_path"]
+    df = get_load_data(cfg, file_path)
+    smote_df = get_processed_data(cfg, df, cfg["random_state"])
     (
         train_features,
         train_labels,
@@ -74,7 +79,7 @@ def test_get_train_features_and_labels(file_path):
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(smote_df, 0.2, 0.5)
+    ) = get_train_test_split(cfg, smote_df, cfg["test_size_1"], cfg["test_size_2"])
     assert len(train_features) > 0
     assert isinstance(train_labels, np.ndarray)
     assert len(train_labels) == len(train_features)
@@ -90,12 +95,12 @@ def test_get_train_features_and_labels(file_path):
     assert len(test_features) == len(test_labels)
     assert len(val_features) == len(val_labels)
     assert len(val_features) == len(test_features)
+    
 
-
-@pytest.mark.parametrize("file_path", ["fraud.csv"])
-def test_get_fraud_model(file_path):
-    df = get_load_data(file_path)
-    smote_df = get_processed_data(df, 35)
+def test_get_fraud_model(cfg):
+    file_path=cfg["file_path"]
+    df = get_load_data(cfg,file_path)
+    smote_df = get_processed_data(cfg, df, cfg["random_state"])
     (
         train_features,
         train_labels,
@@ -103,15 +108,15 @@ def test_get_fraud_model(file_path):
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(smote_df, 0.2, 0.5)
-    model = get_fraud_model(train_features, train_labels, val_features, val_labels)
+    ) = get_train_test_split(cfg, smote_df, cfg["test_size_1"], cfg["test_size_2"])
+    model = get_fraud_model(cfg, train_features, train_labels, val_features, val_labels)
     assert model is not None
 
 
-@pytest.mark.parametrize("file_path", ["fraud.csv"])
-def test_get_fraud_model_evaluation(file_path):
-    df = get_load_data(file_path)
-    smote_df = get_processed_data(df, 35)
+def test_get_fraud_model_evaluation(cfg):
+    file_path=cfg["file_path"]
+    df = get_load_data(cfg,file_path)
+    smote_df = get_processed_data(cfg, df, cfg["random_state"])
     (
         train_features,
         train_labels,
@@ -119,17 +124,17 @@ def test_get_fraud_model_evaluation(file_path):
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(smote_df, 0.2, 0.5)
-    model = get_fraud_model(train_features, train_labels, val_features, val_labels)
+    ) = get_train_test_split(cfg, smote_df, cfg["test_size_1"], cfg["test_size_2"])
+    model = get_fraud_model(cfg,train_features, train_labels, val_features, val_labels)
     model_eval = get_fraud_model_evaluation(model, test_features, test_labels)
     assert isinstance(model_eval, str)
     assert len(model_eval) > 0
 
 
-@pytest.mark.parametrize("file_path", ["fraud.csv"])
-def test_get_F1_Score(file_path):
-    df = get_load_data(file_path)
-    smote_df = get_processed_data(df, 35)
+def test_get_F1_Score(cfg):
+    file_path=cfg["file_path"]
+    df = get_load_data(cfg,file_path)
+    smote_df = get_processed_data(cfg, df, cfg["random_state"])
     (
         train_features,
         train_labels,
@@ -137,8 +142,8 @@ def test_get_F1_Score(file_path):
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(smote_df, 0.2, 0.5)
-    model = get_fraud_model(train_features, train_labels, val_features, val_labels)
+    ) = get_train_test_split(cfg, smote_df, cfg["test_size_1"], cfg["test_size_2"])
+    model = get_fraud_model(cfg, train_features, train_labels, val_features, val_labels)
     score = get_F1_Score(model, test_features, test_labels)
     assert isinstance(score, float)
-    assert score > 0.80
+    assert score > cfg["base_score"] 
