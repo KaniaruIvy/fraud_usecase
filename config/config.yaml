@@ -1,4 +1,4 @@
-file_path: "fraud.csv"
+file_path: "data/fraud.csv"
 test_size_1: 0.2
 test_size_2: 0.5
 random_state: 35
