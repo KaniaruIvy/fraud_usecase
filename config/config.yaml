@@ -7,7 +7,6 @@ columns:
   y_variable: Class
   drop_variable: Time
 
-
 model:
   base_score: 0.5
   booster: "gbtree"

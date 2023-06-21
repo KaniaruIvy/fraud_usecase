@@ -9,9 +9,8 @@ from xgboost import XGBClassifier
 from sklearn.metrics import f1_score
 from omegaconf import DictConfig, OmegaConf
 
-cfg = OmegaConf.load("config/config.yaml")
 
-def get_load_data(file_path: str):
+def get_load_data(cfg: DictConfig, file_path: str):
     """
     Loads a dataset from a CSV file and returns a Pandas DataFrame.
     Args:
@@ -26,7 +25,7 @@ def get_load_data(file_path: str):
     return df
 
 
-def get_processed_data(df: pd.DataFrame, random_state: int):
+def get_processed_data(cfg: DictConfig, df: pd.DataFrame, random_state: int):
     """Gets processed data from a Pandas DataFrame.
 
     Args:
@@ -49,7 +48,7 @@ def get_processed_data(df: pd.DataFrame, random_state: int):
     return smote_df
 
 
-def get_train_test_split(smote_df, test_size_1, test_size_2):
+def get_train_test_split(cfg: DictConfig, smote_df, test_size_1, test_size_2):
     def create_training_sets(data):
         """
         Convert data frame to train, validation and test
@@ -136,7 +135,9 @@ def get_train_test_split_samples(
     return split_samples
 
 
-def get_fraud_model(train_features, train_labels, val_features, val_labels):
+def get_fraud_model(
+    cfg: DictConfig, train_features, train_labels, val_features, val_labels
+):
     """Defines the model used for training
 
     Args:
@@ -228,10 +229,11 @@ def get_F1_Score(model, test_features, test_labels):
 
 
 def run_session_including_load_data(
-    file_path=cfg["file_path"],
-    test_size_1=cfg["test_size_1"],
-    test_size_2=cfg["test_size_2"],
-    random_state=cfg["random_state"],
+    cfg: DictConfig,
+    file_path,
+    test_size_1,
+    test_size_2,
+    random_state,
 ):
     """Runs a session of fraud_detection
 
@@ -263,9 +265,9 @@ def run_session_including_load_data(
     import copy
 
     artifacts = dict()
-    df = get_load_data(file_path)
+    df = get_load_data(cfg, file_path)
     artifacts["load_data"] = copy.deepcopy(df)
-    smote_df = get_processed_data(df, random_state)
+    smote_df = get_processed_data(cfg, df, random_state)
     artifacts["processed_data"] = copy.deepcopy(smote_df)
     (
         train_features,
@@ -274,7 +276,7 @@ def run_session_including_load_data(
         val_labels,
         test_features,
         test_labels,
-    ) = get_train_test_split(smote_df, test_size_1, test_size_2)
+    ) = get_train_test_split(cfg, smote_df, test_size_1, test_size_2)
     split_samples = get_train_test_split_samples(
         test_features,
         test_labels,
@@ -284,7 +286,7 @@ def run_session_including_load_data(
         val_labels,
     )
     artifacts["train_test_split_samples"] = copy.deepcopy(split_samples)
-    model = get_fraud_model(train_features, train_labels, val_features, val_labels)
+    model = get_fraud_model(cfg, train_features, train_labels, val_features, val_labels)
     artifacts["fraud_model"] = copy.deepcopy(model)
     model_eval = get_fraud_model_evaluation(model, test_features, test_labels)
     artifacts["fraud_model_evaluation"] = copy.deepcopy(model_eval)
@@ -294,10 +296,11 @@ def run_session_including_load_data(
 
 
 def run_all_sessions(
-    file_path=cfg["file_path"],
-    test_size_1=cfg["test_size_1"],
-    test_size_2=cfg["test_size_2"],
-    random_state=cfg["random_state"],
+    cfg: DictConfig,
+    file_path,
+    test_size_1,
+    test_size_2,
+    random_state,
 ):
     """Runs all session of fraud_detection except loading data
 
@@ -326,34 +329,25 @@ def run_all_sessions(
     artifacts = dict()
     artifacts.update(
         run_session_including_load_data(
-            file_path, test_size_1, test_size_2, random_state
+            cfg, file_path, test_size_1, test_size_2, random_state
         )
     )
     return artifacts
 
 
-def main() -> None:
+@hydra.main(version_base=None, config_path="config", config_name="config")
+def main(cfg: DictConfig) -> None:
     """Run all sessions."""
 
-    # Edit this section to customize the behavior of artifacts
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--file_path",
-        type=str,
-        default=cfg["file_path"],
-    )
-    parser.add_argument("--test_size_1", type=float, default=cfg["test_size_1"])
-    parser.add_argument("--test_size_2", type=float, default=cfg["test_size_2"])
-    parser.add_argument("--random_state", type=int, default=cfg["random_state"])
-    args = parser.parse_args()
-
     artifacts = run_all_sessions(
-        file_path=args.file_path,
-        test_size_1=args.test_size_1,
-        test_size_2=args.test_size_2,
-        random_state=args.random_state,
+        cfg,
+        file_path=cfg["file_path"],
+        test_size_1=cfg["test_size_1"],
+        test_size_2=cfg["test_size_2"],
+        random_state=cfg["random_state"],
     )
     print(artifacts)
+    print(OmegaConf.to_yaml(cfg))
 
 
 if __name__ == "__main__":
