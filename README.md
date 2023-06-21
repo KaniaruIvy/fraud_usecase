@@ -46,7 +46,7 @@ This will override the value of `n_estimators` in the configuration and use 50 a
 You can customize any other configuration parameter in a similar way, by specifying the corresponding key-value pair as a command-line argument.
 
 Note: The `filename.py` should be replaced with the actual filename of your Python script that contains the code for training the model.
-```
+
 
 ## Configuration
 
