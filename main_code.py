@@ -11,6 +11,7 @@ from omegaconf import DictConfig, OmegaConf
 
 
 def get_load_data(cfg: DictConfig, file_path: str):
+    print("Loading data")
     """
     Loads a dataset from a CSV file and returns a Pandas DataFrame.
     Args:
@@ -18,7 +19,7 @@ def get_load_data(cfg: DictConfig, file_path: str):
     Returns:
          df (pd.DataFrame): A Pandas DataFrame containing the data from the CSV file.
     """
-    y_variable = cfg.columns["y_variable"]
+    y_variable = cfg.columns["Target_variable"]
     df = pd.read_csv(file_path)
     mapped_class = {"'0'": 0, "'1'": 1}
     df[y_variable] = df[y_variable].map(lambda x: mapped_class[x])
@@ -26,6 +27,7 @@ def get_load_data(cfg: DictConfig, file_path: str):
 
 
 def get_processed_data(cfg: DictConfig, df: pd.DataFrame, random_state: int):
+    print("processing data")
     """Gets processed data from a Pandas DataFrame.
 
     Args:
@@ -35,7 +37,7 @@ def get_processed_data(cfg: DictConfig, df: pd.DataFrame, random_state: int):
     Returns:
         smote_df (pd.DataFrame): A Pandas DataFrame containing the processed data.
     """
-    y_variable, drop_variable = cfg.columns["y_variable"], cfg.columns["drop_variable"]
+    y_variable, drop_variable = cfg.columns["Target_variable"], cfg.columns["drop_features"]
     sm = SMOTE(random_state=random_state)
     X = df.drop([y_variable, drop_variable], axis=1).values
     y = df[y_variable].values
@@ -50,6 +52,7 @@ def get_processed_data(cfg: DictConfig, df: pd.DataFrame, random_state: int):
 
 def get_train_test_split(cfg: DictConfig, smote_df, test_size_1, test_size_2):
     def create_training_sets(data):
+        print("splitting into train and test data")
         """
         Convert data frame to train, validation and test
         Args:
@@ -64,8 +67,8 @@ def get_train_test_split(cfg: DictConfig, smote_df, test_size_1, test_size_2):
         """
         # Extract the target variable from the dataframe and convert the type to float32
         y_variable, drop_variable = (
-            cfg.columns["y_variable"],
-            cfg.columns["drop_variable"],
+            cfg.columns["Target_variable"],
+            cfg.columns["drop_features"],
         )
         ys = np.array(data[y_variable]).astype("float32")
         # Drop all the unwanted columns including the target column
@@ -150,30 +153,30 @@ def get_fraud_model(
         model: The model used for training.
     """
     model = XGBClassifier(
-        base_score=cfg.model["base_score"],
-        booster=cfg.model["booster"],
-        colsample_bylevel=cfg.model["colsample_bylevel"],
-        colsample_bynode=cfg.model["colsample_bynode"],
-        colsample_bytree=cfg.model["colsample_bytree"],
-        gamma=cfg.model["gamma"],
-        importance_type=cfg.model["importance_type"],
-        interaction_constraints=cfg.model["interaction_constraints"],
-        learning_rate=cfg.model["learning_rate"],
-        max_delta_step=cfg.model["max_delta_step"],
-        max_depth=cfg.model["max_depth"],
-        min_child_weight=cfg.model["min_child_weight"],
-        monotone_constraints=cfg.model["monotone_constraints"],
-        n_estimators=cfg.model["n_estimators"],
-        n_jobs=cfg.model["n_jobs"],
-        num_parallel_tree=cfg.model["num_parallel_tree"],
-        random_state=cfg.model["random_state"],
-        reg_alpha=cfg.model["reg_alpha"],
-        reg_lambda=cfg.model["reg_lambda"],
-        scale_pos_weight=cfg.model["scale_pos_weight"],
-        silent=cfg.model["silent"],
-        subsample=cfg.model["subsample"],
-        tree_method=cfg.model["tree_method"],
-        validate_parameters=cfg.model["validate_parameters"],
+        base_score=cfg.model_parameters["base_score"],
+        booster=cfg.model_parameters["booster"],
+        colsample_bylevel=cfg.model_parameters["colsample_bylevel"],
+        colsample_bynode=cfg.model_parameters["colsample_bynode"],
+        colsample_bytree=cfg.model_parameters["colsample_bytree"],
+        gamma=cfg.model_parameters["gamma"],
+        importance_type=cfg.model_parameters["importance_type"],
+        interaction_constraints=cfg.model_parameters["interaction_constraints"],
+        learning_rate=cfg.model_parameters["learning_rate"],
+        max_delta_step=cfg.model_parameters["max_delta_step"],
+        max_depth=cfg.model_parameters["max_depth"],
+        min_child_weight=cfg.model_parameters["min_child_weight"],
+        monotone_constraints=cfg.model_parameters["monotone_constraints"],
+        n_estimators=cfg.model_parameters["n_estimators"],
+        n_jobs=cfg.model_parameters["n_jobs"],
+        num_parallel_tree=cfg.model_parameters["num_parallel_tree"],
+        random_state=cfg.model_parameters["random_state"],
+        reg_alpha=cfg.model_parameters["reg_alpha"],
+        reg_lambda=cfg.model_parameters["reg_lambda"],
+        scale_pos_weight=cfg.model_parameters["scale_pos_weight"],
+        silent=cfg.model_parameters["silent"],
+        subsample=cfg.model_parameters["subsample"],
+        tree_method=cfg.model_parameters["tree_method"],
+        validate_parameters=cfg.model_parameters["validate_parameters"],
     )
     model.fit(
         train_features,

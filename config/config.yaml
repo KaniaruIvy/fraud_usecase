@@ -5,10 +5,10 @@ random_state: 35
 base_score: 0.80
 
 columns:
-  y_variable: Class
-  drop_variable: Time
+  Target_variable: Class
+  drop_features: Time
 
-model:
+model_parameters:
   base_score: 0.5
   booster: "gbtree"
   colsample_bylevel: 1
