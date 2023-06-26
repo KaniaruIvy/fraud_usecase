@@ -1,7 +1,7 @@
-import argparse
 import hydra
 import numpy as np
 import pandas as pd
+import logging
 from imblearn.over_sampling import SMOTE
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 from sklearn.model_selection import train_test_split
@@ -9,9 +9,10 @@ from xgboost import XGBClassifier
 from sklearn.metrics import f1_score
 from omegaconf import DictConfig, OmegaConf
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def get_load_data(cfg: DictConfig, file_path: str):
-    print("Loading data")
+    logging.info("Loading data")
     """
     Loads a dataset from a CSV file and returns a Pandas DataFrame.
     Args:
@@ -27,7 +28,7 @@ def get_load_data(cfg: DictConfig, file_path: str):
 
 
 def get_processed_data(cfg: DictConfig, df: pd.DataFrame, random_state: int):
-    print("processing data")
+    logging.info("Processing data")
     """Gets processed data from a Pandas DataFrame.
 
     Args:
@@ -114,6 +115,7 @@ def get_train_test_split(cfg: DictConfig, smote_df, test_size_1, test_size_2):
 def get_train_test_split_samples(
     test_features, test_labels, train_features, train_labels, val_features, val_labels
 ):
+    logging.info("Splitting into test and train data")
     """Splits a dataset into three parts i.e train, test, and validation for training, evaluating and tuning the hyperaremters of the model
 
     Args:
@@ -141,6 +143,7 @@ def get_train_test_split_samples(
 def get_fraud_model(
     cfg: DictConfig, train_features, train_labels, val_features, val_labels
 ):
+    logging.info("Training the model")
     """Defines the model used for training
 
     Args:
@@ -188,6 +191,7 @@ def get_fraud_model(
 
 
 def get_fraud_model_evaluation(model, test_features, test_labels):
+    logging.info("Getting evaluation metrics")
     """Gets the evaluation metrics of the model after training.
 
     Args:
@@ -210,6 +214,7 @@ def get_fraud_model_evaluation(model, test_features, test_labels):
 
 
 def get_F1_Score(model, test_features, test_labels):
+    logging.info("Calculating the F1-Score")
     """Gets the F1-Score of the model after evaluating it against the test features.
 
     Args:
@@ -305,6 +310,7 @@ def run_all_sessions(
     test_size_2,
     random_state,
 ):
+    logging.info("Running all sessions")
     """Runs all session of fraud_detection except loading data
 
     Args:
@@ -340,6 +346,7 @@ def run_all_sessions(
 
 @hydra.main(version_base=None, config_path="config", config_name="config")
 def main(cfg: DictConfig) -> None:
+    logging.info("Starting the main function")
     """Run all sessions."""
 
     artifacts = run_all_sessions(
