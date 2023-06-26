@@ -27,19 +27,21 @@ def test_get_load_data(cfg):
     logging.info('Testing loading of data')
     file_path=cfg["file_path"]
     df = get_load_data(cfg,file_path)
+    assert isinstance(file_path, str)
     assert isinstance(df, pd.DataFrame)
     assert len(df) > 0
-    assert df.columns == df.shape[1]
+    assert len(df.columns) == df.shape[1]
     return df
 
 
-# def test_get_processed_data(cfg):
-#     logging.info('Testing data processing')
-#     file_path=cfg["file_path"]
-#     df = get_load_data(cfg,file_path)
-#     smote_df = get_processed_data(cfg, df, cfg["random_state"])
-#     assert isinstance(smote_df, pd.DataFrame)
-#     assert len(smote_df) > 0
+def test_get_processed_data(cfg):
+    logging.info('Testing data processing')
+    file_path=cfg["file_path"]
+    df = get_load_data(cfg,file_path)
+    smote_df = get_processed_data(cfg, df, cfg["random_state"])
+    assert isinstance(smote_df, pd.DataFrame)
+    assert len(smote_df) > 0
+    assert len(df.columns) == df.shape[1]
 
 # def test_get_train_features_and_labels(cfg):
 #     logging.info('Testing train features and labels generation')
