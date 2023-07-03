@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module main_code</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>main_code</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Civyww%5Conedrive%5Cdesktop%5Csaf%5Cfraud_usecase%5Cmain_code.py">c:\users\ivyww\onedrive\desktop\saf\fraud_usecase\main_code.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="hydra.html">hydra</a><br>
+<a href="logging.html">logging</a><br>
+</td><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+<a href="pandas.html">pandas</a><br>
+</td><td width="25%" valign=top><a href="pydoc.html">pydoc</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-get_F1_Score"><strong>get_F1_Score</strong></a>(model, test_features, test_labels)</dt></dl>
+ <dl><dt><a name="-get_fraud_model"><strong>get_fraud_model</strong></a>(cfg: omegaconf.dictconfig.DictConfig, train_features, train_labels, val_features, val_labels)</dt></dl>
+ <dl><dt><a name="-get_fraud_model_evaluation"><strong>get_fraud_model_evaluation</strong></a>(model, test_features, test_labels)</dt></dl>
+ <dl><dt><a name="-get_load_data"><strong>get_load_data</strong></a>(cfg: omegaconf.dictconfig.DictConfig, file_path: str)</dt></dl>
+ <dl><dt><a name="-get_processed_data"><strong>get_processed_data</strong></a>(cfg: omegaconf.dictconfig.DictConfig, df: pandas.core.frame.DataFrame, random_state: int)</dt></dl>
+ <dl><dt><a name="-get_train_test_split"><strong>get_train_test_split</strong></a>(cfg: omegaconf.dictconfig.DictConfig, smote_df, test_size_1, test_size_2)</dt></dl>
+ <dl><dt><a name="-get_train_test_split_samples"><strong>get_train_test_split_samples</strong></a>(test_features, test_labels, train_features, train_labels, val_features, val_labels)</dt></dl>
+ <dl><dt><a name="-main"><strong>main</strong></a>(cfg: omegaconf.dictconfig.DictConfig) -&gt; None</dt></dl>
+ <dl><dt><a name="-run_all_sessions"><strong>run_all_sessions</strong></a>(cfg: omegaconf.dictconfig.DictConfig, file_path, test_size_1, test_size_2, random_state)</dt></dl>
+ <dl><dt><a name="-run_session_including_load_data"><strong>run_session_including_load_data</strong></a>(cfg: omegaconf.dictconfig.DictConfig, file_path, test_size_1, test_size_2, random_state)</dt><dd><tt>Runs&nbsp;a&nbsp;session&nbsp;of&nbsp;fraud_detection<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;file_path&nbsp;(str):&nbsp;Path&nbsp;to&nbsp;the&nbsp;CSV&nbsp;that&nbsp;contains&nbsp;the&nbsp;fraud&nbsp;data.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;test_size_1&nbsp;(float):&nbsp;A&nbsp;fraction&nbsp;that&nbsp;splits&nbsp;the&nbsp;dataset&nbsp;into&nbsp;train&nbsp;and&nbsp;test<br>
+&nbsp;&nbsp;&nbsp;&nbsp;test_size_2&nbsp;(float):A&nbsp;fraction&nbsp;that&nbsp;splits&nbsp;the&nbsp;test&nbsp;dataset&nbsp;into&nbsp;test&nbsp;and&nbsp;validation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;random_state&nbsp;(int):&nbsp;A&nbsp;random&nbsp;number&nbsp;generator&nbsp;seed<br>
+&nbsp;<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;the&nbsp;following&nbsp;artifacts:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;load_data:&nbsp;The&nbsp;loaded&nbsp;data.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;processed_data:&nbsp;The&nbsp;processed&nbsp;data.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;train_features:&nbsp;The&nbsp;training&nbsp;features.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;train_labels:&nbsp;The&nbsp;training&nbsp;labels.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;val_features:&nbsp;The&nbsp;validation&nbsp;features.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;val_labels:&nbsp;The&nbsp;validation&nbsp;labels.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;test_features:&nbsp;The&nbsp;test&nbsp;features.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;test_labels:&nbsp;The&nbsp;test&nbsp;labels.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;fraud_model:&nbsp;The&nbsp;trained&nbsp;fraud&nbsp;model.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;fraud_model_evaluation:&nbsp;The&nbsp;evaluation&nbsp;results&nbsp;for&nbsp;the&nbsp;fraud&nbsp;model.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;F1_Score:&nbsp;The&nbsp;F1&nbsp;score&nbsp;for&nbsp;the&nbsp;fraud&nbsp;model.</tt></dd></dl>
+</td></tr></table>
+</body></html>

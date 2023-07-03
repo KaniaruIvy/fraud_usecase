@@ -2,6 +2,7 @@ import hydra
 import numpy as np
 import pandas as pd
 import logging
+import pydoc
 from imblearn.over_sampling import SMOTE
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 from sklearn.model_selection import train_test_split
@@ -9,7 +10,10 @@ from xgboost import XGBClassifier
 from sklearn.metrics import f1_score
 from omegaconf import DictConfig, OmegaConf
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 def get_load_data(cfg: DictConfig, file_path: str):
     logging.info("Loading data")
@@ -38,7 +42,10 @@ def get_processed_data(cfg: DictConfig, df: pd.DataFrame, random_state: int):
     Returns:
         smote_df (pd.DataFrame): A Pandas DataFrame containing the processed data.
     """
-    y_variable, drop_variable = cfg.columns["Target_variable"], cfg.columns["drop_features"]
+    y_variable, drop_variable = (
+        cfg.columns["Target_variable"],
+        cfg.columns["drop_features"],
+    )
     sm = SMOTE(random_state=random_state)
     X = df.drop([y_variable, drop_variable], axis=1).values
     y = df[y_variable].values
